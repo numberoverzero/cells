@@ -9,13 +9,6 @@ class MutatingProperty:
     def __init__(self, name):
         self._name = name
 
-    def __get__(self, obj, type=None):
-        try:
-            return obj.__dict__[self._name]
-        except KeyError:
-            raise AttributeError(
-                "'{}' has no attribute '{}'".format(obj.__class__, self._name))
-
     def __set__(self, obj, value):
         # TODO: is it worth the perf hit to check existing value
         obj._dirty = True
@@ -43,7 +36,7 @@ class Shape:
         '''Called whenever a property that mutates verts is changed.'''
         raise NotImplementedError
 
-    def update(self, dt):
+    def update(self, dt=0):
         if self._dirty:
             self._generate_vertices()
             self._dirty = False
