@@ -1,6 +1,5 @@
 import math
 import pyglet
-import pyglet.gl as gl
 
 
 class MutatingProperty:
@@ -111,7 +110,7 @@ class Circle(Shape):
             # For more information:
             #   https://bitbucket.org/pyglet/pyglet/issues/64
             self._vertices = self.batch.add(
-                verts, gl.GL_TRIANGLE_FAN, self.group,
+                verts, pyglet.gl.GL_TRIANGLE_FAN, self.group,
                 ('v3f/' + self._update_frequency, vertices),
                 ('c3B/' + self._update_frequency, colors))
 
@@ -169,6 +168,6 @@ class Rectangle(Shape):
         # First render
         else:
             self._vertices = self.batch.add(
-                6, gl.GL_TRIANGLE_STRIP, self.group,
+                6, pyglet.gl.GL_TRIANGLE_STRIP, self.group,
                 ('v3f/' + self._update_frequency, vertices),
                 ('c3B/' + self._update_frequency, colors))
