@@ -107,8 +107,9 @@ def rect_cluster(x, y, w, h, rate, color, level, max_level, batch):
         sub_y = y + (yo * h/2)
         sub_w = w / 2
         sub_h = w / 2
+        color = 255 * (1 - (level+1) / max_level)
         for shape in rect_cluster(sub_x, sub_y, sub_w, sub_h, rate,
-                                  [int(255 // (level+1)**2)] * 3,
+                                  [int(color)] * 3,
                                   level+1, max_level, batch):
             yield shape
 
