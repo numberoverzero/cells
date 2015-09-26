@@ -1,5 +1,4 @@
 import math
-import compute
 import pyglet
 import pyglet.gl as gl
 
@@ -81,16 +80,18 @@ class Circle(Shape):
         colors = self.color * verts
 
         # Local uses LOAD_FAST
-        rot, push = compute.rotate, vertices.extend
+        push = vertices.extend
+        sx, sy, sz = self.x, self.y, self.z
 
         x, y = self.r, 0
 
         # Center of fan
-        push((0, 0, 0))
+        push((sx, sy, sz))
         for i in range(steps):
-            push((x, y, 0))
-            x, y = rot(x, y, c, s)
-        compute.offset(vertices, self.x, self.y, self.z)
+            push((sx + x, sy + y, sz))
+            # NOTE: this must be a single line, or x
+            # will be mutated before calculating y.
+            x, y = x * c - y * s, x * s + y * c
 
         # Replace existing vertices
         # Vertex count may change with self.r or self.resolution
