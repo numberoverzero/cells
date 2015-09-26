@@ -133,34 +133,33 @@ class Rectangle(Shape):
         super().__init__(**kwargs)
 
     def _generate_vertices(self):
-        vertices = []
-        # 4 verts + 2 degenerate
-        colors = self.color * 6
-
         # precalculate sin, cos
         c = math.cos(self.r)
         s = math.sin(self.r)
 
         # Local uses LOAD_FAST
-        rot, push = compute.rotate, vertices.extend
+        sx, sy, sz = self.x, self.y, self.z
+        w, h = self.w, self.h
 
-        # Proper winding and all that
-        # 2     4
-        #  +---+
-        #  |\  |
-        #  | \ |
-        #  |  \|
-        #  +---+
-        # 1     3
-        push((*rot(0, 0, c, s), 0))
-        push((*rot(0, self.h, c, s), 0))
-        push((*rot(self.w, 0, c, s), 0))
-        push((*rot(self.w, self.h, c, s), 0))
+        vertices = [
+            # x, y, z (degenerate)
+            sx, sy, sz,
 
-        # Insert degenerate vertices for TRIANGLE_STRIP
-        # A B C D -> A A B C D D
-        vertices = vertices[:3] + vertices + vertices[-3:]
-        compute.offset(vertices, self.x, self.y, self.z)
+            # x, y, z
+            sx, sy, sz,
+            # x, y + h, z
+            sx - h * s, sy + h * c, sz,
+            # x + w, y, z
+            sx + w * c, sy + w * s, sz,
+            # x + w, y + h, z
+            sx + (w * c - h * s), sy + (w * s + h * c), sz,
+
+            # x + w, y + h, z (degenerate)
+            sx + (w * c - h * s), sy + (w * s + h * c), sz
+        ]
+
+        # 4 verts + 2 degenerate
+        colors = self.color * 6
 
         # Replace existing vertices
         if self._vertices:
