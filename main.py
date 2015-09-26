@@ -1,7 +1,6 @@
-import pyglet
 import math
 import shapes
-import pyglet.gl as gl
+import pyglet
 import event
 
 
@@ -118,7 +117,7 @@ circles = list(circle_cluster(
     x=450, y=450, r=200,
     rate=1.01, color=[255, 0, 0],
     level=0,
-    max_level=3,
+    max_level=4,
     batch=b))
 rects = list(rect_cluster(
     x=450, y=450, w=400, h=400,
@@ -138,7 +137,9 @@ label = pyglet.text.Label(
 
 @window.event
 def on_draw():
-    gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+    pyglet.gl.glClear(
+        pyglet.gl.GL_COLOR_BUFFER_BIT |
+        pyglet.gl.GL_DEPTH_BUFFER_BIT)
     b.draw()
 
 pyglet.app.run()
