@@ -1,7 +1,9 @@
-import math
-import shapes
-import pyglet
 import event
+import rendering
+import shapes
+
+import math
+import pyglet
 
 
 class Handler:
@@ -23,10 +25,17 @@ class Handler:
             sum(6 for r in shape_list)
         )
 
+    def on_resize(self, width, height):
+        camera.apply("view")
+
 
 window = pyglet.window.Window(width=900, height=900, resizable=True, vsync=0)
+camera = rendering.Camera(window=window)
+camera.projections["view"] = rendering.ortho(near=-1, far=1)
+
 event.inject_update_hook(window, 1/60)
 fps = event.debug_fps(window, 60)
+
 window.push_handlers(Handler())
 
 b = pyglet.graphics.Batch()
@@ -90,24 +99,24 @@ def circle_cluster(x, y, r, rate, color, level, max_level, batch):
             yield shape
 
 
-def rect_cluster(x, y, w, h, rate, color, level, max_level, batch):
+def rect_cluster(x, y, z, w, h, rate, color, level, max_level, batch):
     if level == max_level:
         raise StopIteration
 
     yield RotatingRectangle(
-        x=x, y=y, w=w, h=h,
+        x=x, y=y, w=w, z=z, h=h,
         rate=rate,
         color=color,
-        batch=batch,
-        group=groups[level])
+        batch=batch)
 
     for (xo, yo) in coeffs:
         sub_x = x + (xo * w/2)
         sub_y = y + (yo * h/2)
+        sub_z = z * 2
         sub_w = w / 2
         sub_h = w / 2
         color = 255 * (1 - (level+1) / max_level)
-        for shape in rect_cluster(sub_x, sub_y, sub_w, sub_h, rate,
+        for shape in rect_cluster(sub_x, sub_y, sub_z, sub_w, sub_h, rate,
                                   [int(color)] * 3,
                                   level+1, max_level, batch):
             yield shape
@@ -120,7 +129,7 @@ circles = list(circle_cluster(
     max_level=4,
     batch=b))
 rects = list(rect_cluster(
-    x=450, y=450, w=400, h=400,
+    x=450, y=450, z=0, w=400, h=400,
     rate=128, color=[255, 255, 255],
     level=0,
     max_level=5,
